@@ -1,8 +1,9 @@
+from google.cloud import translate_v2 as translate
 import csv
 import genanki
-from googletrans import Translator
+import random
 
-translator = Translator()
+translate_client = translate.Client()
 words = []
 
 # Create Anki Deck
@@ -35,25 +36,25 @@ with open('id.txt') as f:
     word = line.split()[0]
     frequency = int(line.split()[1])
 
-    if frequency >= 745 and len(word) >= 3:
+    if frequency >= 300 and len(word) >= 3:
       words.append(word)
 
 # Translate words
-translations = translator.translate(words, src='id', dest='nl')
+translations = translate_client.translate(words, target_language='nl')
 rows = [['Indonesian', 'Dutch']]
 
 for translation in translations:
-  origin = translation.origin.capitalize()
-  text = translation.text.capitalize()
+  origin = translation['input'].capitalize()
+  trans = translation['translatedText'].capitalize()
 
-  rows.append([origin, text])
-  deck.add_note(genanki.Note(model=model, fields=[origin, text]))
-  print(f'{origin} -> {text}')
+  rows.append([origin, trans])
+  deck.add_note(genanki.Note(model=model, fields=[origin, trans]))
+  print(f'{origin} -> {trans}')
 
 # Save anki deck
 genanki.Package(deck).write_to_file('id_nl.apkg')
 
-# Save results to csv
+#Save results to csv
 with open('id_nl.csv', 'w', newline='\n') as file:
   writer = csv.writer(file)
   writer.writerows(rows)

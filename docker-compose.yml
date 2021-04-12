@@ -4,5 +4,8 @@ services:
   app:
     build: .
     container_name: anki
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secret/key.json
     volumes:
-      - './src:/usr/src/app'
+      - ./src:/usr/src/app
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/secret/key.json
